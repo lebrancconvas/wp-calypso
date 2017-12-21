@@ -105,14 +105,38 @@
 	}
 }
 
-.get-apps__badges {
+.get-apps__app-badge {
+	display: inline-block;
 	img {
 		height: 40px;
-		margin: 0 12px 0 0;
+		margin: 9px 0;
 		width: auto;
+	}
 
-		@include breakpoint('>480px') {
-			margin: 0 0 0 12px;
+	&.is-external-image img {
+		margin-left: 0;
+		margin-right: 0;
+		height: 41px;
+	}
+
+	&.android-app-badge {
+		img {
+			margin-right: 12px;
+		}
+		& + .is-external-image img {
+			margin-left: 0;
+		}
+	}
+
+	&.is-external-image.android-app-badge {
+		img {
+			height: 59px;
+			margin-top: 0;
+			margin-bottom: 0;
+			margin-right: 0;
+		}
+		& + .ios-app-badge img {
+			margin-left: 0;
 		}
 	}
 }
