@@ -4,11 +4,12 @@
  */
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { identity, noop } from 'lodash';
+import { identity, noop, get } from 'lodash';
 import moment from 'moment';
 import page from 'page';
 import i18n, { localize } from 'i18n-calypso';
 import Gridicon from 'gridicons';
+import { connect } from 'react-redux';
 
 /**
  * Internal dependencies
@@ -16,11 +17,11 @@ import Gridicon from 'gridicons';
 import Card from 'components/card';
 import Site from 'blocks/site';
 import postUtils from 'lib/posts/utils';
-import siteUtils from 'lib/site/utils';
-import { recordEvent } from 'lib/posts/stats';
 import EditorPublishButton, { getPublishButtonStatus } from 'post-editor/editor-publish-button';
 import Button from 'components/button';
 import QuickSaveButtons from 'post-editor/editor-ground-control/quick-save-buttons';
+import { composeAnalytics, recordTracksEvent, recordGoogleEvent } from 'state/analytics/actions';
+import { canCurrentUser } from 'state/selectors';
 
 export class EditorGroundControl extends PureComponent {
 	static propTypes = {
@@ -126,9 +127,9 @@ export class EditorGroundControl extends PureComponent {
 
 	getVerificationNoticeLabel() {
 		const primaryButtonState = getPublishButtonStatus(
-				this.props.site,
 				this.props.post,
-				this.props.savedPost
+				this.props.savedPost,
+				this.props.canUserPublishPosts
 			),
 			buttonLabels = {
 				update: i18n.translate( 'To update, check your email and confirm your address.' ),
@@ -156,10 +157,6 @@ export class EditorGroundControl extends PureComponent {
 		);
 	}
 
-	canPublishPost() {
-		return siteUtils.userCan( 'publish_posts', this.props.site );
-	}
-
 	toggleAdvancedStatus = () => {
 		this.setState( { showAdvanceStatus: ! this.state.showAdvanceStatus } );
 	};
@@ -167,10 +164,7 @@ export class EditorGroundControl extends PureComponent {
 	onPreviewButtonClick = event => {
 		if ( this.isPreviewEnabled() ) {
 			this.props.onPreview( event );
-			const eventLabel = postUtils.isPage( this.props.page )
-				? 'Clicked Preview Page Button'
-				: 'Clicked Preview Post Button';
-			recordEvent( eventLabel );
+			this.props.recordPreviewButtonClick();
 		}
 	};
 
@@ -220,6 +214,7 @@ export class EditorGroundControl extends PureComponent {
 	}
 
 	onBackButtonClick = () => {
+		this.props.recordBackButtonClick();
 		page.back( this.props.allPostsUrl );
 	};
 
@@ -249,6 +244,7 @@ export class EditorGroundControl extends PureComponent {
 				<Site
 					compact
 					site={ this.props.site }
+					onSelect={ this.props.recordSiteButtonClick }
 					indicator={ false }
 					homeLink={ true }
 					externalLink={ true }
@@ -284,4 +280,33 @@ export class EditorGroundControl extends PureComponent {
 	}
 }
 
-export default localize( EditorGroundControl );
+const mapStateToProps = ( state, ownProps ) => {
+	const siteId = get( ownProps, 'site.ID', null );
+
+	const canUserPublishPosts = canCurrentUser( state, siteId, 'publish_posts' );
+
+	return {
+		canUserPublishPosts,
+	};
+};
+
+const mapDispatchToProps = dispatch => ( {
+	recordPreviewButtonClick: () =>
+		dispatch(
+			composeAnalytics(
+				recordTracksEvent(
+					`calypso_editor_${ postUtils.isPage( page ) ? 'page' : 'post' }_preview_button_click`
+				),
+				recordGoogleEvent(
+					'Editor',
+					`Clicked Preview ${ postUtils.isPage( page ) ? 'Page' : 'Post' } Button`,
+					`Editor Preview ${ postUtils.isPage( page ) ? 'Page' : 'Post' } Button Clicked`,
+					`editor${ postUtils.isPage( page ) ? 'Page' : 'Post' }ButtonClicked`
+				)
+			)
+		),
+	recordSiteButtonClick: () => dispatch( recordTracksEvent( 'calypso_editor_site_button_click' ) ),
+	recordBackButtonClick: () => dispatch( recordTracksEvent( 'calypso_editor_back_button_click' ) ),
+} );
+
+export default connect( mapStateToProps, mapDispatchToProps )( localize( EditorGroundControl ) );

@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -22,7 +20,7 @@ import {
 	Quit,
 	Link,
 } from 'layout/guided-tours/config-elements';
-import { hasSelectedSitePremiumOrBusinessPlan } from 'state/ui/guided-tours/contexts';
+import { hasSelectedSitePremiumOrBusinessPlan } from '../selectors/has-selected-site-premium-or-business-plan';
 import { isDesktop } from 'lib/viewport';
 
 export const SimplePaymentsEndOfYearGuide = makeTour(
