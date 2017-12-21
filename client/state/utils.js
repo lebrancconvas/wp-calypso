@@ -27,7 +27,10 @@ import { DESERIALIZE, SERIALIZE } from './action-types';
 import warn from 'lib/warn';
 
 export function isValidStateWithSchema( state, schema, debugInfo ) {
-	const validate = validator( schema );
+	const validate = validator( schema, {
+		greedy: process.env.NODE_ENV !== 'production',
+		verbose: process.env.NODE_ENV !== 'production',
+	} );
 	const valid = validate( state );
 	if ( ! valid && process.env.NODE_ENV !== 'production' ) {
 		function prettifyArgument( obj ) {
@@ -37,14 +40,18 @@ export function isValidStateWithSchema( state, schema, debugInfo ) {
 			return obj;
 		}
 		warn(
-			'state validation failed\nfor state:',
+			'state validation failed for state:\n',
 			state,
-			'\nagainst schema:',
-			schema,
-			'\nwith reason:',
-			prettifyArgument( validate.errors ),
-			'\nsource:',
-			prettifyArgument( debugInfo ) || '(none given)'
+			'\nvalidation failures:\n',
+			validate.errors
+				.map(
+					( { field, value, message, type, schemaPath } ) => `
+${ field } ${ message }.
+Found: ${ JSON.stringify( value ) }.
+Schema violation: ${ JSON.stringify( get( schema, schemaPath ) ) }
+`
+				)
+				.join( '\n' )
 		);
 	}
 	return valid;
