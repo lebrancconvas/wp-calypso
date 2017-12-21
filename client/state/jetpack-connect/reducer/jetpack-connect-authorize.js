@@ -28,7 +28,7 @@ import {
 	SITE_REQUEST_FAILURE,
 } from 'state/action-types';
 
-export default function jetpackConnectAuthorize( state = {}, action ) {
+export default function jetpackConnectAuthorize( state = { isAuthorizing: 'maybe' }, action ) {
 	switch ( action.type ) {
 		case JETPACK_CONNECT_AUTHORIZE:
 			return Object.assign( omit( state, 'userData', 'bearerToken' ), {
