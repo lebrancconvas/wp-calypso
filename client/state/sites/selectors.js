@@ -1084,3 +1084,23 @@ export const siteSupportsGoogleAnalyticsBasicEcommerceTracking = ( state, siteId
 export const siteSupportsGoogleAnalyticsEnhancedEcommerceTracking = ( state, siteId ) => {
 	return isJetpackMinimumVersion( state, siteId, '5.6-beta2' );
 };
+
+/**
+ * Returns true if the site is created less than 30 mins ago.
+ * False otherwise.
+ *
+ * @param {Object}   state  Global state tree
+ * @param  {Number}  siteId Site ID
+ * @return {Boolean}        Whether site is newly created.
+ */
+export function isNewSite( state, siteId ) {
+	const MINUTE = 60 * 1000; // milliseconds
+	const createdAt = getSiteOption( state, siteId, 'created_at' );
+
+	if ( ! createdAt ) {
+		return false;
+	}
+
+	// less than 30 minutes
+	return Date.now() - Date.parse( createdAt ) < 30 * MINUTE;
+}
