@@ -20,6 +20,7 @@ import { cartItems } from 'lib/cart-values';
 import { displayError, clear } from 'lib/upgrades/notices';
 import upgradesActions from 'lib/upgrades/actions';
 import { removeNestedProperties } from 'lib/cart/store/cart-analytics';
+import { INPUT_VALIDATION } from 'lib/store-transactions/step-types';
 
 const TransactionStepsMixin = {
 	submitTransaction: function( event ) {
@@ -50,7 +51,9 @@ const TransactionStepsMixin = {
 
 	_displayNotices: function( cart, step ) {
 		if ( step.error ) {
-			displayError( step.error );
+			// eslint-disable-next-line
+			console.log( 'step.error', step, typeof step.error, typeof step.error.message  );
+			step.name !== INPUT_VALIDATION && displayError( step.error );
 			return;
 		}
 

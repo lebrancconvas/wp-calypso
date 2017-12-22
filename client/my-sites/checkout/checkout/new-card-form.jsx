@@ -14,6 +14,7 @@ import classNames from 'classnames';
  */
 import CreditCardFormFields from 'components/credit-card-form-fields';
 import upgradesActions from 'lib/upgrades/actions';
+import { INPUT_VALIDATION } from 'lib/store-transactions/step-types';
 
 class NewCardForm extends Component {
 	static displayName = 'NewCardForm';
@@ -24,8 +25,11 @@ class NewCardForm extends Component {
 		transaction: PropTypes.object.isRequired,
 	};
 
-	isFieldInvalid = fieldName => {
-		return ! isEmpty( this.props.transaction.errors[ fieldName ] );
+	getErrorMessage = fieldName => {
+		// eslint-disable-next-line
+		console.log( 'this.props.transaction', this.props.transaction.step );
+		const { transaction } = this.props;
+		return transaction.step.name === INPUT_VALIDATION && transaction.errors[ fieldName ];
 	};
 
 	render() {
@@ -52,8 +56,8 @@ class NewCardForm extends Component {
 						card={ this.props.transaction.newCardFormFields }
 						countriesList={ this.props.countriesList }
 						eventFormName="Checkout Form"
-						isFieldInvalid={ this.isFieldInvalid }
 						onFieldChange={ this.handleFieldChange }
+						getErrorMessage={ this.getErrorMessage }
 					/>
 				</div>
 			</div>
