@@ -20,6 +20,10 @@ export const JETPACK_ONBOARDING_STEPS = {
 	SUMMARY: 'summary',
 };
 
+export const JETPACK_ONBOARDING_SUMMARY_STEPS = {
+	SITE_TITLE_DESCRIPTION: 'Site Title & Description',
+};
+
 export const JETPACK_ONBOARDING_COMPONENTS = {
 	[ JETPACK_ONBOARDING_STEPS.SITE_TITLE ]: <JetpackOnboardingSiteTitleStep />,
 	[ JETPACK_ONBOARDING_STEPS.SITE_TYPE ]: <JetpackOnboardingSiteTypeStep />,
