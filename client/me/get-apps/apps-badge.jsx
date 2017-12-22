@@ -20,7 +20,7 @@ import { recordTracksEvent } from 'state/analytics/actions';
 // therefore we have to perform some trickery in getLocaleSlug()
 const APP_STORE_BADGE_URLS = {
 	ios: {
-		defaultSrc: '/calypso/images/me/get-apps-app-store.png',
+		defaultSrc: '/calypso/images/me/get-apps-ios-store.svg',
 		src: 'https://linkmaker.itunes.apple.com/assets/shared/badges/{localeSlug}/appstore-lrg.svg',
 		tracksEvent: 'calypso_app_download_ios_click',
 		getLocaleSlug: function() {

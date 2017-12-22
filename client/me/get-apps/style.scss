@@ -108,27 +108,12 @@
 .get-apps__app-badge {
 	display: inline-block;
 	img {
-		height: 40px;
+		height: 41px;
 		margin: 9px 0;
 		width: auto;
 	}
 
-	&.is-external-image img {
-		margin-left: 0;
-		margin-right: 0;
-		height: 41px;
-	}
-
 	&.android-app-badge {
-		img {
-			margin-right: 12px;
-		}
-		& + .is-external-image img {
-			margin-left: 0;
-		}
-	}
-
-	&.is-external-image.android-app-badge {
 		img {
 			height: 59px;
 			margin-top: 0;
